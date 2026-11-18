@@ -1,10 +1,9 @@
 # The world of Wednesday 18 November 2026, on a single page
 
-[![front page](https://make.fun/badge/news-image-20261118.svg)](https://make.fun/bounty/news-image-20261118)
+[![18 Nov 2026 front page](https://make.fun/badge/news-image-20261118.svg)](https://make.fun/bounty/news-image-20261118)
 
 An entry for the
-[news-image-20261118 bounty](https://make.fun/bounty/news-image-20261118)
-on [make.fun](https://make.fun): the whole of Wednesday 18 November
+[news-image-20261118 bounty on make.fun](https://make.fun/bounty/news-image-20261118): the whole of Wednesday 18 November
 2026, summed up in one picture.
 
 ## Inside the picture
@@ -34,7 +33,7 @@ name.
 
 Only Python 3 is needed — nothing to install, nothing to fetch:
 
-    python3 ./main.py
+    python3 ./main.py   # writes /output/entry.png
 
 That places the picture at `/output/entry.png`. For a trial run in
 another folder:
@@ -69,4 +68,4 @@ ever break those caps, the program stops instead of writing it.
 
 - `main.py` — the entry program, standard library only.
 - `entry.png` — the front page, 1024×1024.
-- `LICENSE` — the MIT licence.
+- `LICENSE` — MIT, the licence the code ships under.

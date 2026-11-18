@@ -1,10 +1,21 @@
 """Put the 18 November 2026 front page where the bounty reads it.
 
-This program is the entry for the make.fun news-image-20261118 bounty. Its only job is to take the front-page picture that ships next to it and drop an exact copy at /output/entry.png, where the bounty expects it.
+This program is the entry for the make.fun news-image-20261118
+bounty. Its only job is to take the front-page picture that ships
+next to it and drop an exact copy at /output/entry.png, the place the
+bounty looks.
 
-Nothing here is clever on purpose. The program leans on the Python standard library alone, talks to no network, flips no coin and writes no clock reading into its output. Run it a second time and the second output matches the first byte for byte.
+Nothing here is clever on purpose. The program leans on the Python
+standard library alone, talks to no network, flips no coin and writes
+no clock reading into its output. Run it a second time and the second
+output matches the first byte for byte.
 
-It checks the picture before it writes. A picture that is heavier than a mebibyte, or wider or taller than 1024 pixels, ends the run with an error rather than a broken output. Once the copy lands, the program hashes the copy and holds it next to the hash of the bundled picture, so a short or scrambled write gets caught instead of slipping past.
+It checks the picture before it writes. A picture that is heavier
+than a mebibyte, or wider or taller than 1024 pixels, ends the run
+with an error rather than a broken output. Once the copy lands, the
+program hashes the copy and holds it next to the hash of the bundled
+picture, so a short or scrambled write gets caught instead of
+slipping past.
 
 To run it:
     python3 ./main.py

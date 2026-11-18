@@ -67,6 +67,19 @@ def image_dimensions(data: bytes) -> tuple[int, int]:
     raise ValueError("entry image is neither PNG nor JPEG")
 
 
+def describe_output(path: Path, size: int, width: int, height: int,
+                    digest: str) -> str:
+    """Build the one-line report printed after a successful write.
+
+    Keeping the message in one place means the success line and the
+    numbers it carries can never drift apart: the same values that
+    were just checked are the ones reported.
+    """
+    short = digest[:16]
+    return (f"wrote {path} ({size} bytes, {width}x{height}, "
+            f"sha256 {short}...)")
+
+
 def main() -> int:
     out_dir = Path(os.environ.get("OUTPUT_DIR", "/output"))
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -95,8 +108,7 @@ def main() -> int:
         print("error: written output does not match the source image",
               file=sys.stderr)
         return 1
-    print(f"wrote {out_path} ({len(data)} bytes, {width}x{height}, "
-          f"sha256 {digest})")
+    print(describe_output(out_path, len(data), width, height, digest))
     return 0
 
 

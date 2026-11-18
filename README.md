@@ -36,6 +36,17 @@ The run is deterministic: the program copies the bundled `entry.png`
 byte for byte, so repeated runs produce byte-identical output. The
 image is 1024×1024 and under the 1 MiB limit.
 
+## Design notes
+
+The page is built like a real newspaper front page, not a poster: a
+heavy date masthead anchors the top, three wide stories share the
+second row, and two rows of five small stories fill the middle. The
+bottom of the page is split between the world map on the left and the
+numbered list on the right, so a reader can go from the map pins to
+the matching list entries without hunting. Every panel keeps its own
+muted pastel tint and the same soft shading, which is what makes
+thirty-six stories feel orderly instead of crowded.
+
 ## Verification
 
 Two runs into different scratch directories produce identical output

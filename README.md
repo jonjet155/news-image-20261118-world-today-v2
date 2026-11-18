@@ -72,18 +72,18 @@ ever break those caps, the program stops instead of writing it.
 
 ## Design notes
 
-The page is built to be read the way a newspaper front page is read: the
-eye lands on the date first, then on the three biggest stories, then
-drifts down through the smaller ones, and finally reaches the map and
-the list at the foot. Nothing on the page is decoration for its own
-sake; every choice is there to keep thirty-six stories readable on a
+The page is built to be read the way a newspaper front page is read.
+The eye lands on the date first, then on the three biggest stories,
+then drifts down through the smaller ones, and finally reaches the map
+and the list at the foot. Nothing on the page is decoration for its own
+sake. Every choice is there to keep thirty-six stories readable on a
 single sheet.
 
 The date sits in a dark navy band because a front page needs an anchor,
 and a dark band holds the eye better than plain text on a pale sheet. A
 thin stripe of several colours runs beneath the band. It is the one
 bright, playful element on the page, and it keeps the navy from feeling
-heavy. The stripe is narrow on purpose — a wide stripe would compete
+heavy. The stripe is narrow on purpose. A wide stripe would compete
 with the stories, while a thin one simply frames the date.
 
 Each story panel carries its own muted pastel tint. The tints are
@@ -98,14 +98,14 @@ The three large stories at the top are the ones that would lead any
 front page that day: a war, a bridge falling for a second day, and a
 summit of three leaders. They get the widest panels because they carry
 the most weight, and because a reader expects the biggest news to take
-the most space. The ten stories in the middle are the next tier —
-important, illustrated, each with its own small scene — and they are
+the most space. The ten stories in the middle are the next tier,
+important and illustrated, each with its own small scene, and they are
 given equal panels in two rows of five, so no one of them shouts louder
 than the rest.
 
 The bottom of the page is split in two. On one side is the world map
-with six numbered pins; on the other is the numbered list of the
-remaining stories. The split is deliberate: a reader can look at the
+with six numbered pins. On the other is the numbered list of the
+remaining stories. The split is deliberate. A reader can look at the
 map, pick a pin, and find the matching number in the list without
 hunting across the page. The map is drawn in the same flat style as the
 panels, with land in a warm olive and the sea in a pale tint, so it
@@ -131,9 +131,9 @@ calm style lets the stories speak, and it lets thirty-six of them share
 a page without the page turning into noise.
 
 The page is warm, not white. The sheet is a soft cream, and the panels
-sit on it in muted pastels with warm accents — a mustard yellow here, a
+sit on it in muted pastels with warm accents, a mustard yellow here, a
 coral red there, a warm beige for the map land. White would feel cold
-and clinical; cream feels like paper. The warm background is what holds
+and clinical. Cream feels like paper. The warm background is what holds
 the whole page together and keeps it pleasant to look at for longer than
 a glance.
 
@@ -145,7 +145,7 @@ same face throughout. Nothing is set in a decorative face, and nothing
 is set so small that it cannot be read.
 
 The grid is strict. Panels line up in rows and columns with even gaps,
-and the edges of the page are full — there is no empty margin and no
+and the edges of the page are full. There is no empty margin and no
 stray space. A strict grid is what makes a dense page feel tidy instead
 of crowded. Every panel sits exactly where the grid says it should, and
 the map and the list sit exactly where the bottom row says they should.
@@ -154,7 +154,7 @@ The picture is 1024 by 1024 pixels and 374,306 bytes. Those numbers are
 inside the bounty limits of 1024 by 1024 and one mebibyte, and the
 program checks them every time it runs, so a picture that broke the
 limits would never be written out. The program copies the bundled
-picture byte for byte, so the output is deterministic: run it twice into
+picture byte for byte, so the output is deterministic. Run it twice into
 two folders and the two files are identical, down to the last byte,
 which the sha256 check in the verification step confirms.
 

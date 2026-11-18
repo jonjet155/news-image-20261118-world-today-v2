@@ -1,10 +1,10 @@
 # Wednesday 18 November 2026 — the whole world on one page
 
-[![news-image-20261118](https://make.fun/badge/news-image-20261118.svg)](https://make.fun/bounty/news-image-20261118)
+[![front page](https://make.fun/badge/news-image-20261118.svg)](https://make.fun/bounty/news-image-20261118)
 
 This repository holds an entry for the
-[news-image-20261118](https://make.fun/bounty/news-image-20261118)
-bounty on [make.fun](https://make.fun): sum up the world's news of
+[news-image-20261118 bounty](https://make.fun/bounty/news-image-20261118)
+on [make.fun](https://make.fun): sum up the world's news of
 Wednesday 18 November 2026 in a single picture.
 
 ## What the picture shows
@@ -34,16 +34,12 @@ its masthead.
 
 Python 3 is all it needs — no extra packages, no network:
 
-```sh
-python3 main.py
-```
+    python3 ./main.py
 
 That writes the picture to `/output/entry.png`. To put it somewhere
 else while testing:
 
-```sh
-OUTPUT_DIR=/tmp/out python3 main.py
-```
+    OUTPUT_DIR=/tmp/check python3 ./main.py
 
 ## How the page is put together
 
@@ -60,11 +56,9 @@ of a crowd.
 The program is deterministic. It copies the bundled picture byte for
 byte, so two runs in different folders give identical files:
 
-```sh
-OUTPUT_DIR=/tmp/out1 python3 main.py
-OUTPUT_DIR=/tmp/out2 python3 main.py
-sha256sum /tmp/out1/entry.png /tmp/out2/entry.png
-```
+    OUTPUT_DIR=/tmp/check1 python3 ./main.py
+    OUTPUT_DIR=/tmp/check2 python3 ./main.py
+    sha256sum /tmp/check1/entry.png /tmp/check2/entry.png
 
 The picture is 1024×1024 and 374,306 bytes, inside the competition's
 limits of 1024×1024 and 1 MiB. If the bundled picture ever broke
@@ -74,4 +68,4 @@ those limits the program would refuse to write it.
 
 - `main.py` — the entry program. Standard library only.
 - `entry.png` — the front page itself, 1024×1024.
-- `LICENSE` — MIT.
+- `LICENSE` — the MIT licence.

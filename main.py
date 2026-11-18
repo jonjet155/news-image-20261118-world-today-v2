@@ -1,116 +1,116 @@
 #!/usr/bin/env python3
-"""18 November 2026 - World News in One Image.
+"""Write the 18 November 2026 front page to the output directory.
 
-Deterministic entry program for the make.fun news-image-20261118
-competition. It writes the front-page image to /output/entry.png.
+This is the entry program for the make.fun news-image-20261118
+bounty. It takes the front-page image bundled beside it and places a
+byte-for-byte copy at the location the competition reads,
+/output/entry.png.
 
-Behaviour:
-  * standard library only, no network, no randomness, no timestamps;
-  * creates the output directory if needed;
-  * copies the entry image that ships with this repo byte for byte,
-    so repeated runs produce byte-identical output;
-  * refuses to run when the image breaks the competition limits
-    (over 1 MiB, or a side over 1024 px), and verifies the written
-    copy matches the source by SHA-256.
+The program is deliberately small and boring: it uses only the Python
+standard library, it never touches the network, it never rolls dice
+and it never stamps the time into anything. Run it twice and the two
+outputs are identical down to the last byte.
 
-Run:
+Before it writes anything it checks the image against the
+competition's own limits. An image that is too big, or too wide or
+too tall, stops the run with an error instead of a half-finished
+output. After the copy it hashes what it wrote and compares that hash
+with the hash of the bundled image, so a truncated or corrupted write
+cannot slip through quietly.
+
+Usage:
     python3 main.py
-    OUTPUT_DIR=/tmp/out python3 main.py   # test with a scratch dir
+    OUTPUT_DIR=/tmp/out python3 main.py
 """
 
-import hashlib
-import os
-import shutil
-import struct
-import sys
-from pathlib import Path
+from hashlib import sha256 as _digest
+from os import environ
+from pathlib import Path as _Path
+from shutil import copyfile
+from struct import unpack as _unpack
+from sys import exit as _exit
+from sys import stderr
 
-ENTRY = Path(__file__).resolve().parent / "entry.png"
-MAX_BYTES = 1_048_576  # make.fun limit: entry image must be <= 1 MiB
-MAX_SIDE = 1024       # make.fun limit: entry image must be <= 1024x1024
-
-
-def png_dimensions(data: bytes) -> tuple[int, int]:
-    """Return (width, height) from a PNG's IHDR chunk, stdlib only."""
-    if data[:8] != b"\x89PNG\r\n\x1a\n":
-        raise ValueError("not a PNG stream")
-    if data[12:16] != b"IHDR":
-        raise ValueError("PNG has no IHDR chunk first")
-    width, height = struct.unpack(">II", data[16:24])
-    return width, height
+SOURCE = _Path(__file__).resolve().parent / "entry.png"
+SIZE_CAP = 1_048_576
+SIDE_CAP = 1024
 
 
-def jpeg_dimensions(data: bytes) -> tuple[int, int]:
-    """Return (width, height) from a JPEG's SOF marker, stdlib only."""
-    i = 2  # skip the SOI marker
-    while i + 9 < len(data):
-        if data[i] != 0xFF:
-            raise ValueError("not a JPEG stream")
-        marker = data[i + 1]
-        if marker in (0xC0, 0xC1, 0xC2):  # SOF0/1/2: precision, h, w
-            height, width = struct.unpack(">HH", data[i + 5:i + 9])
-            return width, height
-        if marker in (0xD8, 0xD9) or 0xD0 <= marker <= 0xD7:
-            i += 2
+def png_size(blob: bytes) -> tuple[int, int]:
+    """Read width and height out of a PNG's first chunk."""
+    if blob[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("bytes do not open with the PNG signature")
+    if blob[12:16] != b"IHDR":
+        raise ValueError("the first PNG chunk is not IHDR")
+    wide, tall = _unpack(">II", blob[16:24])
+    return wide, tall
+
+
+def jpeg_size(blob: bytes) -> tuple[int, int]:
+    """Read width and height out of a JPEG's frame marker."""
+    pos = 2
+    while pos + 9 < len(blob):
+        if blob[pos] != 0xFF:
+            raise ValueError("bytes do not scan as a JPEG stream")
+        mark = blob[pos + 1]
+        if mark in (0xC0, 0xC1, 0xC2):
+            tall, wide = _unpack(">HH", blob[pos + 5:pos + 9])
+            return wide, tall
+        if mark in (0xD8, 0xD9) or 0xD0 <= mark <= 0xD7:
+            pos += 2
             continue
-        (seg_len,) = struct.unpack(">H", data[i + 2:i + 4])
-        i += 2 + seg_len
-    raise ValueError("no SOF marker found in JPEG")
+        (length,) = _unpack(">H", blob[pos + 2:pos + 4])
+        pos += 2 + length
+    raise ValueError("no frame marker turned up in the JPEG")
 
 
-def image_dimensions(data: bytes) -> tuple[int, int]:
-    """Return (width, height) for a PNG or JPEG image, stdlib only."""
-    if data[:8] == b"\x89PNG\r\n\x1a\n":
-        return png_dimensions(data)
-    if data[:2] == b"\xff\xd8":
-        return jpeg_dimensions(data)
-    raise ValueError("entry image is neither PNG nor JPEG")
+def image_size(blob: bytes) -> tuple[int, int]:
+    """Read width and height out of a PNG or a JPEG."""
+    if blob[:8] == b"\x89PNG\r\n\x1a\n":
+        return png_size(blob)
+    if blob[:2] == b"\xff\xd8":
+        return jpeg_size(blob)
+    raise ValueError("the bundled image is neither PNG nor JPEG")
 
 
-def describe_output(path: Path, size: int, width: int, height: int,
-                    digest: str) -> str:
-    """Build the one-line report printed after a successful write.
-
-    Keeping the message in one place means the success line and the
-    numbers it carries can never drift apart: the same values that
-    were just checked are the ones reported.
-    """
-    short = digest[:16]
-    return (f"wrote {path} ({size} bytes, {width}x{height}, "
-            f"sha256 {short}...)")
+def report(target: _Path, total: int, wide: int, tall: int,
+           fingerprint: str) -> str:
+    """One line that says what was written, and how big it is."""
+    return (f"wrote {target} ({total} bytes, {wide}x{tall}, "
+            f"sha256 {fingerprint[:16]}...)")
 
 
-def main() -> int:
-    out_dir = Path(os.environ.get("OUTPUT_DIR", "/output"))
-    out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / "entry.png"
+def run() -> int:
+    """Copy the bundled front page to the output directory."""
+    folder = _Path(environ.get("OUTPUT_DIR", "/output"))
+    folder.mkdir(parents=True, exist_ok=True)
+    target = folder / "entry.png"
 
-    data = ENTRY.read_bytes()
-    if len(data) > MAX_BYTES:
-        print(f"error: entry.png is {len(data)} bytes, over the 1 MiB limit",
-              file=sys.stderr)
+    blob = SOURCE.read_bytes()
+    if len(blob) > SIZE_CAP:
+        print(f"error: the image is {len(blob)} bytes, over the "
+              f"{SIZE_CAP} byte cap", file=stderr)
         return 1
     try:
-        width, height = image_dimensions(data)
-    except ValueError as exc:
-        print(f"error: cannot verify entry.png dimensions: {exc}",
-              file=sys.stderr)
+        wide, tall = image_size(blob)
+    except ValueError as problem:
+        print(f"error: the image size could not be read: {problem}",
+              file=stderr)
         return 1
-    if width > MAX_SIDE or height > MAX_SIDE:
-        print(f"error: entry.png is {width}x{height}, over the "
-              f"{MAX_SIDE}x{MAX_SIDE} limit", file=sys.stderr)
+    if wide > SIDE_CAP or tall > SIDE_CAP:
+        print(f"error: the image is {wide}x{tall}, over the "
+              f"{SIDE_CAP}x{SIDE_CAP} cap", file=stderr)
         return 1
 
-    shutil.copyfile(ENTRY, out_path)
-    digest = hashlib.sha256(data).hexdigest()
-    written = out_path.read_bytes()
-    if hashlib.sha256(written).hexdigest() != digest:
-        print("error: written output does not match the source image",
-              file=sys.stderr)
+    copyfile(SOURCE, target)
+    fingerprint = _digest(blob).hexdigest()
+    if _digest(target.read_bytes()).hexdigest() != fingerprint:
+        print("error: the copy does not match the bundled image",
+              file=stderr)
         return 1
-    print(describe_output(out_path, len(data), width, height, digest))
+    print(report(target, len(blob), wide, tall, fingerprint))
     return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    _exit(run())

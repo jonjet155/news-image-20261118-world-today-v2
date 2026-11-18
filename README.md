@@ -1,57 +1,64 @@
-# 18 November 2026 — World News in One Image
+# Wednesday 18 November 2026 — the whole world on one page
 
 [![news-image-20261118](https://make.fun/badge/news-image-20261118.svg)](https://make.fun/bounty/news-image-20261118)
 
-A newspaper front page that sums up the world's news of Wednesday,
-18 November 2026, in a single image. It is an entry in the
+This repository holds an entry for the
 [news-image-20261118](https://make.fun/bounty/news-image-20261118)
-competition on [make.fun](https://make.fun).
+bounty on [make.fun](https://make.fun): sum up the world's news of
+Wednesday 18 November 2026 in a single picture.
 
-The front page leads with the Gulf war, the collapsed Kerch Bridge and
-the Shenzhen summit, then works through ten more illustrated stories —
-Alaska, Ebola in DR Congo, Cyclone Xavier, North Korea, Gaza, Israel,
-tech outages, Nvidia, France and the World Court Myanmar case — plus a
-numbered list of 23 further stories, a world map with numbered pins and
-a full sources line, for 36 stories in total. Every panel sits on its
-own soft muted pastel tint, with one neat, uniform shading style across
-the whole page on a warm cream background, under a dark navy date
-masthead with a thin multicoloured stripe.
+## What the picture shows
 
-## How to run
+Thirty-six stories, all reported on that one Wednesday, arranged as a
+newspaper front page.
 
-The program needs only Python 3 (standard library only) and writes
-the entry image to `/output/entry.png`:
+Three big stories lead the page: the war in the Gulf, the Kerch Bridge
+coming down for a second day, and the Shenzhen summit where Xi, Putin
+and Trump met. Under them sit ten smaller illustrated stories — the
+Alaska Senate race, Ebola in DR Congo, Cyclone Xavier, a North Korean
+missile, the Gaza ceasefire, a new Israeli government, tech outages
+across the US, Nvidia's record quarter, strikes in France and the
+World Court's Myanmar case. The bottom of the page carries a world map
+with six numbered pins and a numbered list of the other twenty-three
+stories, from a Siberian plane crash to a quake in Romania, so nothing
+from the day is left out. A sources line runs along the foot of the
+page.
+
+The drawing style is flat and calm: clean shapes, soft pastel tints
+that differ from panel to panel, one even shading style throughout,
+and a warm cream page. The date sits in a dark navy band with a thin
+multicoloured stripe underneath it, the way a real front page frames
+its masthead.
+
+## Running the program
+
+Python 3 is all it needs — no extra packages, no network:
 
 ```sh
 python3 main.py
 ```
 
-To test with a scratch directory instead of `/output`:
+That writes the picture to `/output/entry.png`. To put it somewhere
+else while testing:
 
 ```sh
 OUTPUT_DIR=/tmp/out python3 main.py
 ```
 
-The run is deterministic: the program copies the bundled `entry.png`
-byte for byte, so repeated runs produce byte-identical output. The
-image is 1024×1024 and under the 1 MiB limit.
+## How the page is put together
 
-## Design notes
+A heavy date masthead holds the top of the page. Three wide stories
+share the row below it, and two rows of five small stories fill the
+middle. The bottom is split in two: the map on the left, the numbered
+list on the right, so a reader can match each pin to its story without
+searching. Because every panel keeps its own muted tint and the same
+soft shading, thirty-six stories still read as one tidy page instead
+of a crowd.
 
-The page is built like a real newspaper front page, not a poster: a
-heavy date masthead anchors the top, three wide stories share the
-second row, and two rows of five small stories fill the middle. The
-bottom of the page is split between the world map on the left and the
-numbered list on the right, so a reader can go from the map pins to
-the matching list entries without hunting. Every panel keeps its own
-muted pastel tint and the same soft shading, which is what makes
-thirty-six stories feel orderly instead of crowded.
+## Checking the output
 
-## Verification
-
-Two runs into different scratch directories produce identical output
-(same SHA-256), and the program refuses to write an image that breaks
-the competition's size limits:
+The program is deterministic. It copies the bundled picture byte for
+byte, so two runs in different folders give identical files:
 
 ```sh
 OUTPUT_DIR=/tmp/out1 python3 main.py
@@ -59,8 +66,12 @@ OUTPUT_DIR=/tmp/out2 python3 main.py
 sha256sum /tmp/out1/entry.png /tmp/out2/entry.png
 ```
 
-## Files
+The picture is 1024×1024 and 374,306 bytes, inside the competition's
+limits of 1024×1024 and 1 MiB. If the bundled picture ever broke
+those limits the program would refuse to write it.
 
-- `main.py` — the entry program (stdlib only, no network).
-- `entry.png` — the front-page image (1024×1024, 374,306 bytes).
+## Contents
+
+- `main.py` — the entry program. Standard library only.
+- `entry.png` — the front page itself, 1024×1024.
 - `LICENSE` — MIT.
